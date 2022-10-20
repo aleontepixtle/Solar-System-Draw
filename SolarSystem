@@ -1,0 +1,255 @@
+#Authors: Andrew Leon T, Thomas Barnett, Hayden Peterson
+#Date: 05/02/2022
+#Class: CSC 120 M.Craft
+#Description: This program displays all planets on a canvas and asks for user
+# which planet info to fetch. Information about planet is then displayed in a
+# messagebox, data is fetched through a dictionary
+
+#imports required modules for canvas drawing and messagebox
+import tkinter as tk 
+import tkinter.messagebox
+# data holding planet facts
+SUN_FACTS = ('The sun is a star.\nThe sun is 4.5 billion years old.\n' +
+             'Light from the sun takes eight\nminutes and twenty seconds\n' +
+             'to reach the earth')
+MERCURY_FACTS = ('Mercury is the smallest planet in our solar system\n' +
+                'It is the closest planet to the sun, but it is not the\n' +
+                'hottest')
+VENUS_FACTS = ('Venus is the hottest planet. It has a thick atmosphere\n' +
+               'full of greenhouse gases. Venus is unique for many reasons.\n' +
+               'One reason is that it rotates in the opposite direction\n' +
+               'of Earth.')
+EARTH_FACTS = ("Water covers 70% of Earth's surface. Our atmosphere\n" +
+               "is made mostly of nitrogen. Earth is a terrestrial planet.\n" +
+               "It is small and rocky.")
+MARS_FACTS = ("Mars is a cold desert world.\nIt is half the size of\n" +
+              "Earth. Mars is sometimes called the Red Planet.\n" +
+              "It's red because of rusty iron in the ground.")
+JUPITER_FACTS = ("Jupiter is the biggest planet in our solar system.\n" +
+                 "It's similar to a star, but it never got massive enough\n" +
+                 "to start burning. It is covered in swirling cloud\n" +
+                 "stripes. It has big storms like the Great Red Spot,\n" +
+                 "which has been going for hundreds of years.")
+SATURN_FACTS = ("Saturn is mostly a ball of hydrogen and helium.\n" +
+                "The rings we see are made of groups of tiny ringlets\n" +
+                "that surround Saturn. They’re made of\n" +
+                "chunks of ice and rock.")
+URANUS_FACTS = ("Uranus is made of water, methane, and ammonia fluids\n" +
+                "above a small rocky center. Its atmosphere is made of\n" +
+                "hydrogen and helium like Jupiter and Saturn, but it also\n" +
+                "has methane. The methane makes Uranus blue.")
+NEPTUNE_FACTS = ("Neptune is dark, cold, and very windy.\nIt's the last" +
+                 "of the planets in our solar system.\nIts atmosphere is" +
+                 "made of hydrogen, helium, and methane.\nNeptune has six" +
+                 "rings, but they're very hard to see")
+PLUTO_FACTS = ("Pluto is a dwarf planet in the Jupiter Belt\nPluto has a" +
+               "heart-shaped glacier the size of Texas and Oklahoma." +
+               " Pluto is named after the Roman god of the underworld.")
+               
+
+# dictionary corresponding to planets and their info
+PLANET_DICT = {'sun':SUN_FACTS,'mercury':MERCURY_FACTS,'venus':VENUS_FACTS,
+               'earth':EARTH_FACTS, 'mars':MARS_FACTS, 'jupiter':JUPITER_FACTS,
+               'saturn':SATURN_FACTS, 'uranus':URANUS_FACTS, 
+               'neptune':NEPTUNE_FACTS, 'pluto':PLUTO_FACTS}
+
+#canvas and planet data for drawing
+CANVAS_WIDTH = 600
+CANVAS_HEIGHT = 300
+SPACING = 10
+
+SUN_X = CANVAS_WIDTH / 6
+SUN_Y = CANVAS_HEIGHT / 3
+SUN_RAD = 50
+SUN_COLOR = 'yellow'
+
+MERC_RAD = 10
+MERC_X = SUN_X + SUN_RAD + SPACING + MERC_RAD
+MERC_Y = SUN_Y
+MERC_COLOR = 'orange'
+
+VEN_RAD = 18
+VEN_X = MERC_X + MERC_RAD + SPACING + VEN_RAD
+VEN_Y = SUN_Y
+VEN_COLOR = 'SkyBlue'
+
+EAR_RAD = 12
+EAR_X = VEN_X + VEN_RAD + SPACING + EAR_RAD
+EAR_Y = SUN_Y
+EAR_COLOR = 'blue'
+
+MAR_RAD = 8
+MAR_X = EAR_X + EAR_RAD + SPACING + MAR_RAD
+MAR_Y = SUN_Y
+MAR_COLOR = 'red'
+
+JUP_RAD = 32
+JUP_X = MAR_X + MAR_RAD + SPACING + JUP_RAD
+JUP_Y = SUN_Y
+JUP_COLOR = 'firebrick'
+
+SAT_RAD = 30
+SAT_X = JUP_X + JUP_RAD + SPACING + SAT_RAD
+SAT_Y = SUN_Y
+SAT_ARC = SAT_X - SAT_RAD, SAT_Y - SAT_RAD, SAT_X + SAT_RAD, SAT_Y + SAT_RAD
+SAT_COLOR = 'tan'
+
+URA_RAD = 21
+URA_X = SAT_X + SAT_RAD + SPACING + URA_RAD
+URA_Y = SUN_Y
+URA_COLOR = 'SkyBlue1'
+
+NEP_RAD = 15
+NEP_X = URA_X + SAT_RAD + SPACING + NEP_RAD
+NEP_Y = SUN_Y
+NEP_COLOR = 'lightskyblue3'
+
+PLU_RAD = 6
+PLU_X = NEP_X + NEP_RAD + SPACING + PLU_RAD
+PLU_Y = SUN_Y
+PLU_COLOR = 'green'
+
+
+class MyGUI:
+    def __init__(self):
+        """Objects belonging to GUI here"""
+        self.main_window = tk.Tk()
+        self.canvas = tk.Canvas(self.main_window, 
+                                width = CANVAS_WIDTH,
+                                height = CANVAS_HEIGHT)
+        
+        """Create canvas objects here: frames, labels, buttons, entry box"""
+        self.bottom_frame = tkinter.Frame(self.main_window) 
+        
+        self.prompt_label = tkinter.Label(self.main_window,
+                                          text = 'What planet would you like to learn about?')
+        self.label1 = tkinter.Label(self.main_window,
+                                          text = 'Solar System Info Program')        
+                
+        self.enter_button = tkinter.Button(self.main_window, text="Enter",
+                                      command=self.planet_info)        
+        
+        self.entry = tkinter.Entry(self.main_window)        
+        
+        """Create planet ovals using global values"""
+        
+        # CREATE SUN
+        self.canvas.create_oval(SUN_X - SUN_RAD, SUN_Y - SUN_RAD,
+                                SUN_X + SUN_RAD, SUN_Y + SUN_RAD,
+                                fill = SUN_COLOR) #sun color
+        #CREATE TEXT UNDER PLANET         
+        self.canvas.create_text(SUN_X, SUN_Y + SUN_RAD + SPACING,
+                                text="Sun")
+        
+        
+        #CREATE MERCURY
+        self.canvas.create_oval(MERC_X - MERC_RAD, MERC_Y - MERC_RAD,
+                                MERC_X + MERC_RAD, MERC_Y + MERC_RAD ,
+                                fill = MERC_COLOR) #mercury color
+        #CREATE TEXT UNDER PLANET          
+        self.canvas.create_text(MERC_X, MERC_Y + MERC_RAD + SPACING,
+                                text="Mercury")
+        
+        # CREATE VENUS
+        self.canvas.create_oval(VEN_X - VEN_RAD, VEN_Y - VEN_RAD,
+                                VEN_X + VEN_RAD, VEN_Y + VEN_RAD,
+                                fill = VEN_COLOR) #venus color
+        #CREATE TEXT UNDER PLANET         
+        self.canvas.create_text(VEN_X, VEN_Y + VEN_RAD + SPACING,
+                                text="Venus")       
+        
+        # CREATE EARTH
+        self.canvas.create_oval(EAR_X - EAR_RAD, EAR_Y - EAR_RAD,
+                                EAR_X + EAR_RAD, EAR_Y + EAR_RAD,
+                                fill = EAR_COLOR) #earth color
+        #CREATE TEXT UNDER PLANET         
+        self.canvas.create_text(EAR_X, EAR_Y + EAR_RAD + SPACING,
+                              text="Earth")      
+        
+        # CREATE MARS
+        self.canvas.create_oval(MAR_X - MAR_RAD, MAR_Y - MAR_RAD,
+                                MAR_X + MAR_RAD, MAR_Y + MAR_RAD,
+                                fill = MAR_COLOR) #mars color
+        #CREATE TEXT UNDER PLANET         
+        self.canvas.create_text(MAR_X, MAR_Y + MAR_RAD + SPACING,
+                              text="Mars")          
+        
+        # CREATE JUPITER
+        self.canvas.create_oval(JUP_X - JUP_RAD, JUP_Y - JUP_RAD,
+                                JUP_X + JUP_RAD, JUP_Y + JUP_RAD,
+                                fill = JUP_COLOR) #jupiter color
+        #CREATE TEXT UNDER PLANET         
+        self.canvas.create_text(JUP_X, JUP_Y + JUP_RAD + SPACING,
+                            text="Jupiter") 
+        
+        # CREATE SATURN & RING
+        self.canvas.create_oval(SAT_X - SAT_RAD - 10, SAT_Y - SAT_RAD + 10,
+                              SAT_X + SAT_RAD + 10, SAT_Y + SAT_RAD - 10,
+                              fill = "") # RING color         
+        self.canvas.create_oval(SAT_X - SAT_RAD, SAT_Y - SAT_RAD,
+                              SAT_X + SAT_RAD, SAT_Y + SAT_RAD,
+                              fill = SAT_COLOR) #saturn color
+       
+        #CREATE TEXT UNDER PLANET         
+        self.canvas.create_text(SAT_X, SAT_Y + SAT_RAD + SPACING,
+                           text="Saturn")   
+        
+        # CREATE URANUS
+        self.canvas.create_oval(URA_X - URA_RAD, URA_Y - URA_RAD,
+                              URA_X + URA_RAD, URA_Y + URA_RAD,
+                              fill = URA_COLOR) #uranus color
+        #CREATE TEXT UNDER PLANET         
+        self.canvas.create_text(URA_X, URA_Y + URA_RAD + SPACING,
+                              text="Uranus") 
+        
+        # CREATE NEPTUNE
+        self.canvas.create_oval(NEP_X - NEP_RAD, NEP_Y - NEP_RAD,
+                             NEP_X + NEP_RAD, NEP_Y + NEP_RAD,
+                             fill = NEP_COLOR) #neptune color
+        #CREATE TEXT UNDER PLANET         
+        self.canvas.create_text(NEP_X, NEP_Y + NEP_RAD + SPACING,
+                               text="Neptune")  
+        
+        # CREATE PLUTO
+        self.canvas.create_oval(PLU_X - PLU_RAD, PLU_Y - PLU_RAD,
+                             PLU_X + PLU_RAD, PLU_Y + PLU_RAD,
+                             fill = PLU_COLOR)  #pluto color
+        #CREATE TEXT UNDER PLANET         
+        self.canvas.create_text(PLU_X, PLU_Y + PLU_RAD + SPACING,
+                               text="Pluto")   
+        
+        """Packing items here"""
+        self.enter_button.pack(side = 'bottom')
+        self.bottom_frame.pack()
+        self.label1.pack(side='top')
+        self.entry.pack(side='bottom')
+        self.prompt_label.pack(side='bottom')
+        self.canvas.pack()
+        tk.mainloop()
+        
+    def planet_info(self):
+        #the user_input variable holds the data that is typed into our GUI
+        user_input = self.entry.get()
+        #the x variable is just a loop control variable 
+        x = 1
+        while x == 1:
+            #the if clause checks to see if the user's input is a key value in
+            #our dictionary. 
+            #the .lower() function allows different inputs to work with this
+            #algorithm 
+            if user_input.lower() in PLANET_DICT.keys():
+                #This message box displays the proper facts
+                tkinter.messagebox.showinfo('Response',
+                                            PLANET_DICT[user_input.lower()])
+                x = 0 #prevents infinite loop
+            else:
+                #The following message box is for error handling
+                #if the user input is not a planet, you will be given
+                #instructions for re-entering a planet name
+                tkinter.messagebox.showinfo('Response',
+                                            ('Please enter a planet' +
+                                             ' in our solar system'))
+                x = 0    
+        
+
+newGUI = MyGUI()
